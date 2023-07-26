@@ -1,5 +1,7 @@
 package me.jihoon.jpa.channel;
 
+import com.querydsl.core.types.Predicate;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,4 +29,19 @@ class ChannelRepositoryTest {
     assert foundChannel.get().getId().equals(savedChannel.getId());
   }
 
+  @Test
+  void queryDslTest() {
+    // given
+    var newChannel = Channel.builder().name("teasun").build();
+    channelRepository.save(newChannel);
+
+    Predicate predicate = QChannel.channel
+        .name.equalsIgnoreCase("TEASUN");
+
+    // when
+    Optional<Channel> optional = channelRepository.findOne(predicate);
+
+    // then
+    assert optional.get().getName().equals(newChannel.getName());
+  }
 }
