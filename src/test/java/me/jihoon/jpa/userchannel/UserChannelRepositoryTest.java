@@ -15,47 +15,47 @@ import org.springframework.test.annotation.Rollback;
 @Rollback(value = false)
 class UserChannelRepositoryTest {
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-    @Autowired
-    private ChannelRepository channelRepository;
+  @Autowired
+  private ChannelRepository channelRepository;
 
-    @Test
-    void userJoinChannelTest() {
-        // given
-        var newChannel = Channel.builder().name("new-channel").build();
-        var newUser = User.builder().username("new_user").password("new-pass").build();
-        var newUserChannel = newChannel.joinUser(newUser);
+  @Test
+  void userJoinChannelTest() {
+    // given
+    var newChannel = Channel.builder().name("new-channel").build();
+    var newUser = User.builder().username("new_user").password("new-pass").build();
+    var newUserChannel = newChannel.joinUser(newUser);
 
-        // when
-        var savedChannel = channelRepository.insertChannel(newChannel);
-        var savedUser = userRepository.insertUser(newUser);
+    // when
+    var savedChannel = channelRepository.save(newChannel);
+    var savedUser = userRepository.save(newUser);
 
-        // then
-        var foundChannel = channelRepository.selectChannel(savedChannel.getId());
-        assert foundChannel.getUserChannels().stream()
-                .map(UserChannel::getChannel)
-                .map(Channel::getName)
-                .anyMatch(name -> name.equals(newChannel.getName()));
-    }
+    // then
+    var foundChannel = channelRepository.findById(savedChannel.getId());
+    assert foundChannel.get().getUserChannels().stream()
+        .map(UserChannel::getChannel)
+        .map(Channel::getName)
+        .anyMatch(name -> name.equals(newChannel.getName()));
+  }
 
-    @Test
-    void userJoinChannelWithCascadeTest() {
-        // given
-        var newChannel = Channel.builder().name("new-channel").build();
-        var newUser = User.builder().username("new_user").password("new-pass").build();
-        newChannel.joinUser(newUser);
+  @Test
+  void userJoinChannelWithCascadeTest() {
+    // given
+    var newChannel = Channel.builder().name("new-channel").build();
+    var newUser = User.builder().username("new_user").password("new-pass").build();
+    newChannel.joinUser(newUser);
 
-        // when
-        var savedChannel = channelRepository.insertChannel(newChannel);
-        var savedUser = userRepository.insertUser(newUser);
+    // when
+    var savedChannel = channelRepository.save(newChannel);
+    var savedUser = userRepository.save(newUser);
 
-        // then
-        var foundChannel = channelRepository.selectChannel(savedChannel.getId());
-        assert foundChannel.getUserChannels().stream()
-                .map(UserChannel::getChannel)
-                .map(Channel::getName)
-                .anyMatch(name -> name.equals(newChannel.getName()));
-    }
+    // then
+    var foundChannel = channelRepository.findById(savedChannel.getId());
+    assert foundChannel.get().getUserChannels().stream()
+        .map(UserChannel::getChannel)
+        .map(Channel::getName)
+        .anyMatch(name -> name.equals(newChannel.getName()));
+  }
 }

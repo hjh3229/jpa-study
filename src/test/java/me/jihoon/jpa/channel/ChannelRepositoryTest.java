@@ -6,26 +6,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 @Transactional
 @Rollback(value = false)
 class ChannelRepositoryTest {
-    @Autowired
-    private ChannelRepository channelRepository;
 
-    @Test
-    void insertSelectChannelTest() {
-        // given
-        var newChannel = Channel.builder().name("new-channel").build();
+  @Autowired
+  private ChannelRepository channelRepository;
 
-        // when
-        var savedChannel = channelRepository.insertChannel(newChannel);
+  @Test
+  void insertSelectChannelTest() {
+    // given
+    var newChannel = Channel.builder().name("new-channel").build();
 
-        // then
-        var foundChannel = channelRepository.selectChannel(savedChannel.getId());
-        assert foundChannel.getId().equals(savedChannel.getId());
-    }
+    // when
+    var savedChannel = channelRepository.save(newChannel);
+
+    // then
+    var foundChannel = channelRepository.findById(savedChannel.getId());
+    assert foundChannel.get().getId().equals(savedChannel.getId());
+  }
 
 }
